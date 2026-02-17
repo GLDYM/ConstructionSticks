@@ -5,6 +5,7 @@ import mrbysco.constructionstick.api.IStickTemplate;
 import mrbysco.constructionstick.api.IStickUpgrade;
 import mrbysco.constructionstick.config.ConstructionConfig;
 import mrbysco.constructionstick.containers.ContainerManager;
+import mrbysco.constructionstick.containers.ContainerRegistrar;
 import mrbysco.constructionstick.containers.ContainerTrace;
 import mrbysco.constructionstick.items.stick.ItemStick;
 import mrbysco.constructionstick.stick.StickItemUseContext;
@@ -34,9 +35,13 @@ import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.util.BlockSnapshot;
 import net.neoforged.neoforge.event.level.BlockEvent;
 import org.jetbrains.annotations.Nullable;
+import top.theillusivec4.curios.api.CuriosApi;
+import top.theillusivec4.curios.api.type.capability.ICuriosItemHandler;
+import top.theillusivec4.curios.api.type.inventory.ICurioStacksHandler;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.function.Predicate;
 
@@ -85,6 +90,28 @@ public class StickUtil {
 	public static List<ItemStack> getMainInv(Player player) {
 		return player.getInventory().items.subList(9, player.getInventory().items.size());
 	}
+
+    public static List<ItemStack> getArmor(Player player) {
+        return player.getInventory().armor;
+    }
+
+	public static List<ItemStack> getCuriosInv(Player player) {
+        List<ItemStack> result = new ArrayList<>();
+		if (ContainerRegistrar.isCuriosLoaded) {
+            CuriosApi.getCuriosInventory(player).ifPresent(handler -> {
+                Map<String, ICurioStacksHandler> curios = handler.getCurios();
+                for (ICurioStacksHandler slotHandler : curios.values()) {
+                    for (int i = 0; i < slotHandler.getSlots(); i++) {
+                        ItemStack stack = slotHandler.getStacks().getStackInSlot(i);
+                        if (!stack.isEmpty()) {
+                            result.add(stack);
+                        }
+                    }
+                }
+            });
+		}
+		return result;
+	}	
 
 	public static List<ItemStack> getFullInv(Player player) {
 		List<ItemStack> inventory = new ArrayList<>(player.getInventory().offhand);

@@ -73,6 +73,15 @@ repositories {
         name = "TerraformersMC"
         url = "https://maven.terraformersmc.com/"
     }
+    maven {
+        name = "Illusive Soulworks maven"
+        url = "https://maven.theillusivec4.top/"
+    }
+    maven { 
+        name = 'CurseMaven'
+        url = 'https://cursemaven.com' 
+    }
+    mavenCentral()
 }
 
 dependencies {
@@ -85,6 +94,15 @@ dependencies {
 
     compileOnly "dev.emi:emi-neoforge:${emi_version}:api"
     localRuntime "dev.emi:emi-neoforge:${emi_version}"
+
+    implementation "top.theillusivec4.curios:curios-neoforge:${curios_version}:api"
+    compileOnly "org.appliedenergistics:appliedenergistics2:${ae2_version}"
+    // compileOnly "vazkii.botania:Botania:${botania}:api"
+    compileOnly "curse.maven:l2library-620203:${l2library_fileid}"
+    compileOnly "curse.maven:l2-backpack-620229:${l2backpack_fileid}"
+    compileOnly "curse.maven:toms-storage-378609:${tomsstorage_fileid}"
+    // compileOnly "curse.maven:refined-storage-243076:${refinedstorage_fileid}")
+    compileOnly "curse.maven:beyond-dimensions-1222890:${beyond_dimensions_fileid}"
 }
 
 jar {

@@ -111,6 +111,8 @@ public class SupplierInventory implements IStickSupplier {
 
 		List<ItemStack> hotbar = StickUtil.getHotbarWithOffhand(player);
 		List<ItemStack> mainInv = StickUtil.getMainInv(player);
+        List<ItemStack> armor = StickUtil.getArmor(player);
+        List<ItemStack> curios = StickUtil.getCuriosInv(player);
 
 		// Take items from main inv, loose items first
 		count = takeItemsInvList(count, item, mainInv, false);
@@ -120,7 +122,14 @@ public class SupplierInventory implements IStickSupplier {
 		count = takeItemsInvList(count, item, hotbar, true);
 		count = takeItemsInvList(count, item, hotbar, false);
 
-		return count;
+		// Take items from armor
+	    count = takeItemsInvList(count, item, armor, true);
+        count = takeItemsInvList(count, item, armor, false);    
+
+        count = takeItemsInvList(count, item, curios, true);
+        count = takeItemsInvList(count, item, curios, false); 
+
+        return count;
 	}
 
 	private int takeItemsInvList(int count, Item item, List<ItemStack> inv, boolean container) {
