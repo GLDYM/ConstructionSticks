@@ -1,65 +1,60 @@
-// package mrbysco.constructionstick.containers.handlers;
+package mrbysco.constructionstick.containers.handlers;
 
-// import net.minecraft.server.MinecraftServer;
-// import net.minecraft.world.entity.player.Player;
-// import net.minecraft.world.item.ItemStack;
-// import mrbysco.constructionstick.api.IContainerHandler;
-// import mrbysco.constructionstick.containers.ContainerTrace;
-// import com.wintercogs.beyonddimensions.Item.Custom.NetedItem;
-// import com.wintercogs.beyonddimensions.Item.Custom.NetTerminalItem;
-// import com.wintercogs.beyonddimensions.Api.DataBase.DimensionsNet;
-// import com.wintercogs.beyonddimensions.Api.DataBase.Storage.UnifiedStorage;
-// import com.wintercogs.beyonddimensions.Api.DataBase.Stack.IStackType;
-// import com.wintercogs.beyonddimensions.Api.DataBase.Stack.ItemStackType;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import mrbysco.constructionstick.api.IContainerHandler;
+import mrbysco.constructionstick.containers.ContainerTrace;
 
-// public class HandlerNetTerminal implements IContainerHandler {
+import com.wintercogs.beyonddimensions.Api.DataBase.DimensionsNet;
+import com.wintercogs.beyonddimensions.Api.DataBase.Storage.UnifiedStorage;
+import com.wintercogs.beyonddimensions.Api.DataBase.Stack.IStackKey;
+import com.wintercogs.beyonddimensions.Api.DataBase.Stack.ItemStackKey;
+import com.wintercogs.beyonddimensions.Item.Custom.NetedItem;
+import com.wintercogs.beyonddimensions.Item.Custom.NetTerminalItem;
+import com.wintercogs.beyonddimensions.DataComponents.ModDataComponents;
 
-//     @Override
-//     public boolean matches(Player player, ItemStack inventoryStack) {
-//         return inventoryStack.getItem() instanceof NetTerminalItem;
-//     }
+public class HandlerNetTerminal implements IContainerHandler {
 
-//     @Override
-//     public int getSignature(Player player, ItemStack inventoryStack) {
-//         if (!(inventoryStack.getItem() instanceof NetTerminalItem terminal)) return 0;
-//         int id = NetedItem.getNetId(inventoryStack);
-//         return (id != -1) ? 10000 + id : 0;
-//     }
+    @Override
+    public boolean matches(Player player, ItemStack itemStack, ItemStack inventoryStack) {
+        return inventoryStack.getItem() instanceof NetTerminalItem;
+    }
 
-//     @Override
-//     public int countItems(Player player, ContainerTrace trace, ItemStack itemStack, ItemStack inventoryStack) {
-//         DimensionsNet net = getNetFromTerminal(inventoryStack, player);
-//         if (net == null) return 0;
+    @Override
+    public int getSignature(Player player, ItemStack inventoryStack) {
+        if (!(inventoryStack.getItem() instanceof NetTerminalItem terminal)) return -1;
+        int id = inventoryStack.getOrDefault(ModDataComponents.NET_ID_DATA, -1);
+        return (id != -1) ? 10000 + id : -1;
+    }
 
-//         UnifiedStorage storage = net.getUnifiedStorage();
-//         ItemStackType query = new ItemStackType(new ItemStack(itemStack.getItem(), Integer.MAX_VALUE));
-//         IStackType<?> result = storage.extract(query, true);
+    @Override
+    public int countItems(Player player, ContainerTrace trace, ItemStack itemStack, ItemStack inventoryStack) {
+        DimensionsNet net = NetedItem.getNet(inventoryStack);
+        if (net == null) return 0;
 
-//         if (result instanceof ItemStackType itemResult) {
-//             return itemResult.getStack().getCount();
-//         }
-//         return 0;
-//     }
+        UnifiedStorage storage = net.getUnifiedStorage();
+        long result = storage.extract(new ItemStackKey(itemStack), Integer.MAX_VALUE, true, false).amount();
 
-//     @Override
-//     public int useItems(Player player, ContainerTrace trace, ItemStack itemStack, ItemStack inventoryStack, int count) {
-//         DimensionsNet net = getNetFromTerminal(inventoryStack, player);
-//         if (net == null) return count;
+        if (result > Integer.MAX_VALUE) {
+            return Integer.MAX_VALUE;
+        }
 
-//         UnifiedStorage storage = net.getUnifiedStorage();
-//         ItemStackType request = new ItemStackType(new ItemStack(itemStack.getItem(), count));
-//         IStackType<?> extracted = storage.extract(request, false);
+        return (int) result;
+    }
 
-//         if (extracted instanceof ItemStackType itemResult) {
-//             return count - itemResult.getStack().getCount();
-//         }
-//         return 0;
-//     }
+    @Override
+    public int useItems(Player player, ContainerTrace trace, ItemStack itemStack, ItemStack inventoryStack, int count) {
+        DimensionsNet net = NetedItem.getNet(inventoryStack);
+        if (net == null) return count;
 
-//     private DimensionsNet getNetFromTerminal(ItemStack terminalStack, Player player) {
-//         if (!(terminalStack.getItem() instanceof NetTerminalItem terminal)) return null;
-//         int id = NetedItem.getNetId(terminalStack);
-//         MinecraftServer server = player.getServer();
-//         return (server != null) ? DimensionsNet.getNetFromId(id) : null;
-//     }
-// }
+        UnifiedStorage storage = net.getUnifiedStorage();
+        long result = storage.extract(new ItemStackKey(itemStack), count, false, false).amount();
+
+        if (result > count) {
+            return 0;
+        }
+
+        return count - (int) result;
+    }
+}

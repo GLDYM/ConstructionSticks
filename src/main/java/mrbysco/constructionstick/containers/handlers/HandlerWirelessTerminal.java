@@ -17,7 +17,7 @@ import mrbysco.constructionstick.containers.ContainerTrace;
 public class HandlerWirelessTerminal implements IContainerHandler {
 
     @Override
-    public boolean matches(Player player, ItemStack inventoryStack) {
+    public boolean matches(Player player, ItemStack itemStack, ItemStack inventoryStack) {
         return inventoryStack.getItem() instanceof WirelessTerminalItem;
     }
 

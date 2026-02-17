@@ -3,8 +3,8 @@ package mrbysco.constructionstick.containers;
 import mrbysco.constructionstick.ConstructionStick;
 import mrbysco.constructionstick.containers.handlers.HandlerBundle;
 import mrbysco.constructionstick.containers.handlers.HandlerCapability;
-// import mrbysco.constructionstick.containers.handlers.HandlerDimensionsNet;
-// import mrbysco.constructionstick.containers.handlers.HandlerNetTerminal;
+import mrbysco.constructionstick.containers.handlers.HandlerDimensionsNet;
+import mrbysco.constructionstick.containers.handlers.HandlerNetTerminal;
 import mrbysco.constructionstick.containers.handlers.HandlerPortableCell;
 import mrbysco.constructionstick.containers.handlers.HandlerShulkerbox;
 import mrbysco.constructionstick.containers.handlers.HandlerWirelessTerminal;
@@ -42,10 +42,10 @@ public class ContainerRegistrar {
         //     ConstructionStick.LOGGER.info("Refined Storage integration added");
         // }
 
-        // if(ModList.get().isLoaded("beyonddimensions")) {
-        //     ConstructionStick.containerManager.register(new HandlerDimensionsNet());
-        //     ConstructionStick.containerManager.register(new HandlerNetTerminal());
-        //     ConstructionStick.LOGGER.info("Beyond Dimensions integration added");
-        // }
+        if(ModList.get().isLoaded("beyonddimensions")) {
+            ConstructionStick.containerManager.register(new HandlerDimensionsNet());
+            ConstructionStick.containerManager.register(new HandlerNetTerminal());
+            ConstructionStick.LOGGER.info("Beyond Dimensions integration added");
+        }
 	}
 }
